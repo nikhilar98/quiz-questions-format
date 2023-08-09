@@ -49,7 +49,7 @@
            const [qType,setQType] = useState("")
            const [body,setBody] = useState("")
            const [wb,setWb] = useState(null)
-
+           const [formDisable,setFormDisable] = useState(false)
            const [questionData,setQuestionData]= useState([])
 
 
@@ -57,12 +57,12 @@
             function handleSubmit(e){
                 e.preventDefault()
                 
-                let questions = body.split("////").map(ele=>ele.trim()) 
+                let questions = body.split("////").map(ele=>ele.trim()) //TODO
                 console.log(questions)
                 
                 questions.forEach((ele,i)=>{
                                 
-                  let question = ele.split("?")[0].split(". ")[1]+" ?"
+                  let question = ele.split("?")[0].split(". ")[1]+" ?"  //TODO
                   let lowerCasedBody = ele.toLowerCase()
                   let optionA= lowerCasedBody.slice(lowerCasedBody.indexOf("a)")+2,lowerCasedBody.indexOf("b)")).trim() 
                   let optionB= lowerCasedBody.slice(lowerCasedBody.indexOf("b)")+2,lowerCasedBody.indexOf("c)")).trim()
@@ -85,19 +85,7 @@
                     } 
                   })
                   .join(","))
-                  // let correct
-                  // if(correctOption=='A'){
-                  //   correct='1'
-                  // }
-                  // else if(correctOption=='B'){
-                  //   correct='2'
-                  // }
-                  // else if(correctOption=='C'){
-                  //   correct='3'
-                  // }
-                  // else if(correctOption=='D'){
-                  //   correct='4'
-                  // }              
+                             
 
                   let explanation = lowerCasedBody.split("explanation: ")[1].trim()
 
@@ -107,13 +95,6 @@
                   console.log(optionA+"\n"+optionB+"\n"+optionC+"\n"+optionD+"\n"+ correct+"\n"+ explanation)
                   
 
-                  // setSlNo(slno+1)
-                  // setQuestionData([...questionData,{slno,subject,topic,tags,qType,body,question,optionA,optionB,optionC,optionD,correct
-                  //   ,explanation}])
-
-                    
-                  
-                  
                   setQuestionData(prevData => [
                         ...prevData,
                         {
@@ -148,6 +129,8 @@
                   setTags("")
                   setQType("")
                   setBody("")
+
+                  setFormDisable(true)
                  
             } 
 
@@ -176,7 +159,6 @@
 
                 console.log(excelData);
                 
-                // wb.SheetNames.push("Quiz sheet")
 
                 const ws_data = [["S No.","SUBJECT","TOPIC","TAGS","QUESTION TYPE","QUESTION TEXT","OPTION1"
                 ,"OPTION2","OPTION3","OPTION4","OPTION5","OPTION6","OPTION7","OPTION8","OPTION9","OPTION10","RIGHT ANSWER","EXPLANATION","CORRECT MARKS","NEGATIVE MARKS"],...excelData]
@@ -184,8 +166,6 @@
                 const wsName = `Sheet ${wb.SheetNames.length+1}`
 
                 const ws = XLSX.utils.aoa_to_sheet(ws_data)
-                
-                // wb.Sheets["Quiz sheet"] = ws 
 
                 XLSX.utils.book_append_sheet(wb, ws, wsName)
 
@@ -203,12 +183,15 @@
 
 
                 setQuestionData([])
+
+                // window.location.reload();
+                
               
             }
 
             return (
                       <div>
-                        <fieldset>
+                        <fieldset disabled={formDisable}>
                           <form onSubmit={handleSubmit}>
                             <label>Subject</label><br/>
                             <input type="text" value={subject} onChange={(e)=>{setSubject(e.target.value)}}/><br/>
@@ -227,6 +210,7 @@
                           </form>
                         </fieldset>
                         <button onClick={getExcelSheet} disabled={questionData.length==0}>Get Excel format</button>
+                        {formDisable && <strong>Spreadsheet is ready ! :D</strong>}
                       </div>
                    )
           }
