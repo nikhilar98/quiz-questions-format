@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Sample Title 
+        </title>
+        <style>
+          fieldset{
+            background-color: white;
+            border-radius: 10px;
+          }
+          body{
+            background-color: burlywood;
+          }
+          button{
+            background-color: rgb(148, 148, 143);
+            border-radius: 5px;
+          }
+          textarea{
+            width: 95vw;
+            height: 200px;
+          }
+          input,button,textarea{
+            margin: 5px 0px;
+          }
+        </style>
+    </head>
+    <body>
+        <div id="root"></div>
+        <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+        <script crossorigin src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
+        <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+        <script lang="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+        
+        <script type="text/babel">
+
+          const rootHandle = document.getElementById('root')
+
+          const {useState,useEffect} = React
+
+
+          function App(props){
+
+           const [slNo,setSlNo] = useState(1)
+           const [subject,setSubject] = useState("")
+           const [topic,setTopic] = useState("")
+           const [tags,setTags] = useState("")
+           const [qType,setQType] = useState("")
+           const [body,setBody] = useState("")
+           const [wb,setWb] = useState(null)
+
+           const [questionData,setQuestionData]= useState([])
+
+
+           
+            function handleSubmit(e){
+                e.preventDefault()
+                
+                let questions = body.split("////").map(ele=>ele.trim()) 
+                console.log(questions)
+                
+                questions.forEach((ele,i)=>{
+                                
+                  let question = ele.split("?")[0].split(". ")[1]+" ?"
+                  let lowerCasedBody = ele.toLowerCase()
+                  let optionA= lowerCasedBody.slice(lowerCasedBody.indexOf("a)")+2,lowerCasedBody.indexOf("b)")).trim() 
+                  let optionB= lowerCasedBody.slice(lowerCasedBody.indexOf("b)")+2,lowerCasedBody.indexOf("c)")).trim()
+                  let optionC= lowerCasedBody.slice(lowerCasedBody.indexOf("c)")+2,lowerCasedBody.indexOf("d)")).trim()
+                  let optionD= lowerCasedBody.slice(lowerCasedBody.indexOf("d)")+2,lowerCasedBody.indexOf("answer:")).trim()
+                  
+                  
+                  let correct= (lowerCasedBody.split("answer:")[1].split("explanation:")[0].split(",").map(el=>el.trim()[0]).map(el=>{
+                    if(el=='a'){
+                        return '1'
+                    }
+                    else if(el=='b'){
+                        return '2'
+                    }
+                    else if(el=='c'){
+                        return '3'
+                    }
+                    else if(el=='d'){
+                        return '4'
+                    } 
+                  })
+                  .join(","))
+                  // let correct
+                  // if(correctOption=='A'){
+                  //   correct='1'
+                  // }
+                  // else if(correctOption=='B'){
+                  //   correct='2'
+                  // }
+                  // else if(correctOption=='C'){
+                  //   correct='3'
+                  // }
+                  // else if(correctOption=='D'){
+                  //   correct='4'
+                  // }              
+
+                  let explanation = lowerCasedBody.split("explanation: ")[1].trim()
+
+                  let correctMarks=2.00
+                  let negativeMarks = 1.00
+
+                  console.log(optionA+"\n"+optionB+"\n"+optionC+"\n"+optionD+"\n"+ correct+"\n"+ explanation)
+                  
+
+                  // setSlNo(slno+1)
+                  // setQuestionData([...questionData,{slno,subject,topic,tags,qType,body,question,optionA,optionB,optionC,optionD,correct
+                  //   ,explanation}])
+
+                    
+                  
+                  
+                  setQuestionData(prevData => [
+                        ...prevData,
+                        {
+                            slNo:i+1 ,
+                            subject,
+                            topic,
+                            tags,
+                            qType,
+                            question,
+                            optionA,
+                            optionB,
+                            optionC,
+                            optionD,
+                            optionE:"",
+                            optionF:"",
+                            optionG:"",
+                            optionH:"",
+                            optionI:"",
+                            optionJ:"",
+                            correct,
+                            explanation,
+                            correctMarks,
+                            negativeMarks
+
+                        }
+                    ]);
+
+
+              })
+                  setSubject("")
+                  setTopic("")
+                  setTags("")
+                  setQType("")
+                  setBody("")
+                 
+            } 
+
+
+           
+            useEffect(()=>{
+                console.log(questionData)
+            },[questionData])
+
+            useEffect(()=>{
+              const wb = XLSX.utils.book_new()
+              wb.Props = {
+                        Title: "Quiz",
+                        Subject: "Quiz details",
+                        Author: "Nikhil A R",
+                        CreatedDate: new Date()
+                        };
+              setWb(wb)
+            },[])
+            
+
+            function getExcelSheet(){
+              
+                const excelData = questionData.map(ele=>{return Object.values(ele)})
+
+
+                console.log(excelData);
+                
+                // wb.SheetNames.push("Quiz sheet")
+
+                const ws_data = [["S No.","SUBJECT","TOPIC","TAGS","QUESTION TYPE","QUESTION TEXT","OPTION1"
+                ,"OPTION2","OPTION3","OPTION4","OPTION5","OPTION6","OPTION7","OPTION8","OPTION9","OPTION10","RIGHT ANSWER","EXPLANATION","CORRECT MARKS","NEGATIVE MARKS"],...excelData]
+
+                const wsName = `Sheet ${wb.SheetNames.length+1}`
+
+                const ws = XLSX.utils.aoa_to_sheet(ws_data)
+                
+                // wb.Sheets["Quiz sheet"] = ws 
+
+                XLSX.utils.book_append_sheet(wb, ws, wsName)
+
+                const wbout = XLSX.write(wb, {bookType:"xlsx", type:"binary"})
+
+                function s2ab(s) { 
+                    var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
+                    var view = new Uint8Array(buf);  //create uint8array as viewer
+                    for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
+                    return buf;    
+                }
+
+                
+                saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), 'QuestionsConsolidated.xlsx');
+
+
+                setQuestionData([])
+              
+            }
+
+            return (
+                      <div>
+                        <fieldset>
+                          <form onSubmit={handleSubmit}>
+                            <label>Subject</label><br/>
+                            <input type="text" value={subject} onChange={(e)=>{setSubject(e.target.value)}}/><br/>
+                            <label>Topic</label><br/>
+                            <input type="text" value={topic} onChange={(e)=>{setTopic(e.target.value)}}/><br/>
+                            <label>Tags</label><br/>
+                            <input type="text" value={tags} onChange={(e)=>{setTags(e.target.value)}}/><br/>
+                            <label>Question type</label><br/>
+                            <select value={qType} onChange={(e)=>{setQType(e.target.value)}}>
+                              <option value="">Select Question type</option>
+                              <option value="SINGLECORRECT">SINGLECORRECT</option>
+                              <option value="MULTICORRECT">MULTICORRECT </option>
+                            </select><br/>
+                            <textarea  value={body} onChange={(e)=>{setBody(e.target.value)}}></textarea><br/>
+                            <input type="submit" value="Submit"/>
+                          </form>
+                        </fieldset>
+                        <button onClick={getExcelSheet} disabled={questionData.length==0}>Get Excel format</button>
+                      </div>
+                   )
+          }
+           ReactDOM.render(<App/>,rootHandle)
+           
+        </script>
+    </body>
+</html>
