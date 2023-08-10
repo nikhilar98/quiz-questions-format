@@ -80,10 +80,10 @@
                                 
                   let question = ele.split("?")[0].split(`${questionDelimiter} `)[1]+" ?" 
                   let lowerCasedBody = ele.toLowerCase()
-                  let optionA= lowerCasedBody.slice(lowerCasedBody.indexOf("a)")+2,lowerCasedBody.indexOf("b)")).trim() 
-                  let optionB= lowerCasedBody.slice(lowerCasedBody.indexOf("b)")+2,lowerCasedBody.indexOf("c)")).trim()
-                  let optionC= lowerCasedBody.slice(lowerCasedBody.indexOf("c)")+2,lowerCasedBody.indexOf("d)")).trim()
-                  let optionD= lowerCasedBody.slice(lowerCasedBody.indexOf("d)")+2,lowerCasedBody.indexOf("answer:")).trim()
+                  let optionA= ele.slice(lowerCasedBody.indexOf("a)")+2,lowerCasedBody.indexOf("b)")).trim() 
+                  let optionB= ele.slice(lowerCasedBody.indexOf("b)")+2,lowerCasedBody.indexOf("c)")).trim()
+                  let optionC= ele.slice(lowerCasedBody.indexOf("c)")+2,lowerCasedBody.indexOf("d)")).trim()
+                  let optionD= ele.slice(lowerCasedBody.indexOf("d)")+2,lowerCasedBody.indexOf("answer:")).trim()
                   
                   
                   let correct= (lowerCasedBody.split("answer:")[1].split("explanation:")[0].split(",").map(el=>el.trim()[0]).map(el=>{
@@ -103,7 +103,7 @@
                   .join(","))
                              
 
-                  let explanation = lowerCasedBody.split("explanation: ")[1].trim()
+                  let explanation = ele.split("Explanation: ")[1].trim()
 
                   let correctMarks=2.00
                   let negativeMarks = 1.00
