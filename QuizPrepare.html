@@ -13,8 +13,19 @@
             background-color: burlywood;
           }
           button{
-            background-color: rgb(148, 148, 143);
+            background-color:rgb(167, 196, 158);
+            border-style:solid;
+            border-color: rgb(5, 126, 5);
             border-radius: 5px;
+            padding:2px;
+            cursor: pointer;
+            margin-left:450px;
+            transition: all 0.1s;
+          }
+          button:disabled{
+            background-color: rgb(184, 149, 149);
+            cursor:default;
+            border:none;
           }
           textarea{
             width: 95vw;
@@ -22,6 +33,9 @@
           }
           input,button,textarea{
             margin: 5px 0px;
+          }
+          img{
+            width:30px;
           }
         </style>
     </head>
@@ -219,7 +233,8 @@
                             <input type="submit" value="Submit"/>
                           </form>
                         </fieldset>
-                        <button onClick={getExcelSheet} disabled={questionData.length==0}>Get Excel format</button>
+                        <button onClick={getExcelSheet} disabled={questionData.length==0}>
+                          <img src="https://upload.wikimedia.org/wikipedia/commons/7/73/Microsoft_Excel_2013-2019_logo.svg" alt="Download Excel"/></button>
                         {formDisable && <strong> Spreadsheet is ready ! :D </strong>}
                       </div>
                    )
